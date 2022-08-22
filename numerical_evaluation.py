@@ -11,12 +11,11 @@ from tqdm import tqdm
 from test import pred_label_onehot
 
 from models.experimental import attempt_load
-from utils.datasets import create_dataloader,create_dataloader_modified
-from utils.general import coco80_to_coco91_class, check_dataset, check_file, check_img_size, check_requirements, \
+from utils.datasets import create_dataloader
+from utils.general import  check_img_size,\
     box_iou, non_max_suppression, scale_coords, xyxy2xywh, xywh2xyxy, set_logging, increment_path, colorstr,post_nms, nms_modified
 from utils.metrics import ap_per_class, ConfusionMatrix
-from utils.plots import plot_images, output_to_target, plot_study_txt,plot_images_modified
-from utils.torch_utils import select_device, time_synchronized
+from utils.plots import plot_images, output_to_target
 
 import torchvision
 
@@ -53,7 +52,7 @@ if __name__ == '__main__':
     if device.type != 'cpu':
         model(torch.zeros(1, 3, imgsz, imgsz).to(device).type_as(next(model.parameters())))  # run once
     task = task if task in ('train', 'val', 'test') else 'val'  # path to train/val/test images
-    dataloader = create_dataloader_modified(source, imgsz, batch_size, gs,
+    dataloader = create_dataloader(source, imgsz, batch_size, gs,
                                     pad=0.5, rect=True,
                                    prefix=colorstr(f'{task}: '),image_weights=True)[0]
 
@@ -77,7 +76,7 @@ if __name__ == '__main__':
         # # if would like to use one_hot for output
         # out = pred_label_onehot(out)
         # out = non_max_suppression(out)
-        out = post_nms(out,0.45)# list of anchors with [xyxy, conf, cls]
+        # out = post_nms(out,0.45)# list of anchors with [xyxy, conf, cls]
 
 
         # # if would like to use depthmap as the class directly
@@ -87,8 +86,8 @@ if __name__ == '__main__':
 
 # plot ----------------------------------------------------------------------------------------------------------------
         # list of detections, on (n,6) tensor per image [xyxy, conf, cls]
-        plot_images_modified(img, targets, paths, fname='check.jpg', names=None)
-        plot_images_modified(img, output_to_target(out),paths ,fname = 'check_pred.jpg',names=None)
+        plot_images(img, targets, paths, fname='check.jpg', names=None)
+        plot_images(img, output_to_target(out),paths ,fname = 'check_pred.jpg',names=None)
 
 
 # update confusion matrix ----------------------------------------------------------------------------------------------
